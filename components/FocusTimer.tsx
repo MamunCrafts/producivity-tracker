@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { stopTimer } from '@/store/habitSlice';
+import { stopTimerAsync } from '@/store/habitSlice';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Square } from 'lucide-react';
@@ -61,7 +61,7 @@ export function FocusTimer() {
             <Button 
               variant="destructive" 
               className="w-full" 
-              onClick={() => dispatch(stopTimer())}
+              onClick={() => dispatch(stopTimerAsync())}
             >
               <Square className="h-4 w-4 mr-2" fill="currentColor" /> Stop & Save
             </Button>

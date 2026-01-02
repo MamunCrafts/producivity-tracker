@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAppDispatch } from '@/store/hooks';
-import { addHabit } from '@/store/habitSlice';
+import { createHabit } from '@/store/habitSlice';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -37,7 +37,7 @@ export function HabitForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(addHabit(formData));
+    dispatch(createHabit(formData));
     setOpen(false);
     // Reset form
     setFormData({

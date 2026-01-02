@@ -3,7 +3,7 @@
 import { useRef, useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { store } from '@/store/store';
-import { hydrate } from '@/store/habitSlice';
+import { fetchHabits, fetchLogs } from '@/store/habitSlice';
 
 export default function StoreProvider({
   children,
@@ -14,15 +14,8 @@ export default function StoreProvider({
 
     useEffect(() => {
         if (!initialized.current) {
-             const stored = localStorage.getItem('redux-habit-state');
-             if (stored) {
-                 try {
-                     const parsed = JSON.parse(stored);
-                     store.dispatch(hydrate(parsed));
-                 } catch (e) {
-                     console.error("Failed to load state", e);
-                 }
-             }
+             store.dispatch(fetchHabits());
+             store.dispatch(fetchLogs());
              initialized.current = true;
         }
     }, []);

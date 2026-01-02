@@ -11,7 +11,7 @@ interface AnalyticsProps {
   habit: Habit;
 }
 
-export function Analytics({ habit }: AnalyticsProps) {
+export function HabitAnalytics({ habit }: AnalyticsProps) {
   const logs = useAppSelector((state) => state.habit.logs);
 
   const data = useMemo(() => {

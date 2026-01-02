@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import { useAppDispatch } from '@/store/hooks';
-import { addManualLog } from '@/store/habitSlice';
+import { createLogAsync } from '@/store/habitSlice';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { PlusCircle } from 'lucide-react';
+import { TimeLog } from '@/types';
 
 interface ManualLogFormProps {
   habitId: string;
@@ -27,11 +28,17 @@ export function ManualLogForm({ habitId, habitTitle }: ManualLogFormProps) {
     e.preventDefault();
     const durationSeconds = (formData.hours * 3600) + (formData.minutes * 60);
     if (durationSeconds > 0) {
-        dispatch(addManualLog({
-            habitId,
-            durationSeconds,
+        
+        const newLog: TimeLog = {
+            id: crypto.randomUUID(),
+            habitId: habitId,
+            startTime: new Date().toISOString(), // Approximate
+            endTime: null,
+            durationSeconds: durationSeconds,
             date: formData.date
-        }));
+        };
+
+        dispatch(createLogAsync(newLog));
         setOpen(false);
         // Reset (keep date as is for convenience, reset value)
         setFormData(prev => ({ ...prev, hours: 0, minutes: 0 }));

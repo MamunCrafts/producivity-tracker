@@ -2,13 +2,13 @@
 
 import { Habit } from '@/types';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { startTimer, deleteHabit } from '@/store/habitSlice';
+import { startTimer, deleteHabitAsync } from '@/store/habitSlice';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Play, BarChart2, Trash2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Analytics } from './Analytics';
+import { HabitAnalytics } from './HabitAnalytics';
 import { ManualLogForm } from './ManualLogForm';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -108,11 +108,11 @@ export function HabitCard({ habit }: HabitCardProps) {
                     {/* Fixed: Added DialogTitle for accessibility */}
                     <DialogTitle>{habit.title} Analytics</DialogTitle>
                 </DialogHeader>
-                <Analytics habit={habit} />
+                <HabitAnalytics habit={habit} />
               </DialogContent>
             </Dialog>
             
-            <Button size="icon" variant="ghost" className="text-zinc-500 hover:text-red-400 hover:bg-red-400/10" onClick={() => dispatch(deleteHabit(habit.id))}>
+            <Button size="icon" variant="ghost" className="text-zinc-500 hover:text-red-400 hover:bg-red-400/10" onClick={() => dispatch(deleteHabitAsync(habit.id))}>
                 <Trash2 className="h-4 w-4" />
             </Button>
           </div>
