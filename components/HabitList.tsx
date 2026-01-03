@@ -1,10 +1,21 @@
 'use client';
 
 import { useAppSelector } from '@/store/hooks';
+import { ShimmerCard } from './ui/shimmer';
 import { HabitCard } from './HabitCard';
 
 export function HabitList() {
-  const habits = useAppSelector((state) => state.habit.habits);
+  const { habits, status } = useAppSelector((state) => state.habit);
+
+  if (status === 'loading') {
+    return (
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <ShimmerCard key={i} />
+        ))}
+      </div>
+    );
+  }
 
   if (habits.length === 0) {
     return (

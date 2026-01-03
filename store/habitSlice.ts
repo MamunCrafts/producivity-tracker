@@ -110,6 +110,9 @@ export const habitSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchHabits.pending, (state) => {
+        state.status = 'loading';
+      })
       .addCase(fetchHabits.fulfilled, (state, action) => {
         state.habits = action.payload;
         state.status = 'idle';
