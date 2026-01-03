@@ -44,7 +44,7 @@ export default function RootLayout({
             <p className="text-zinc-400 text-sm mt-1">
               Senior Software Developer{" "}
               <span className="mx-2 text-zinc-700">|</span>{" "}
-              <span className="font-medium text-violet-500">Fanfare</span>
+              <span className="font-medium ">Fanfare</span>
             </p>
             <p className="text-zinc-500 text-xs mt-4">
               &copy; {new Date().getFullYear()} Md AL Mamun Mim. All Rights
