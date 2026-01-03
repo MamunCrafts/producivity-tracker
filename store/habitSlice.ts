@@ -30,7 +30,10 @@ export const fetchLogs = createAsyncThunk("habit/fetchLogs", async () => {
 export const createHabit = createAsyncThunk(
   "habit/createHabit",
   async (
-    habitData: Omit<Habit, "id" | "createdAt" | "completed" | "color"> & {
+    habitData: Omit<
+      Habit,
+      "id" | "createdAt" | "completed" | "color" | "status"
+    > & {
       color?: string;
     }
   ) => {
@@ -39,6 +42,7 @@ export const createHabit = createAsyncThunk(
       createdAt: new Date().toISOString(),
       completed: false,
       color: habitData.color || "#3b82f6",
+      status: "Active" as const,
       ...habitData,
     };
     const response = await fetch("/api/habits", {
@@ -135,8 +139,9 @@ export const habitSlice = createSlice({
         state.habits.push(action.payload);
       })
       .addCase(deleteHabitAsync.fulfilled, (state, action) => {
+        // Remove from local state (API won't return it anymore since status is 'Deleted')
         state.habits = state.habits.filter((h) => h.id !== action.payload);
-        state.logs = state.logs.filter((l) => l.habitId !== action.payload);
+        // Keep logs since we're doing soft delete
       })
       .addCase(createLogAsync.fulfilled, (state, action) => {
         state.logs.push(action.payload);

@@ -1,5 +1,5 @@
-import mongoose, { Schema, Model } from 'mongoose';
-import { Habit } from '@/types';
+import mongoose, { Schema, Model } from "mongoose";
+import { Habit } from "@/types";
 
 type HabitDocument = Habit & mongoose.Document;
 
@@ -15,9 +15,11 @@ const HabitSchema = new Schema<HabitDocument>({
   createdAt: { type: String, required: true },
   completed: { type: Boolean, default: false },
   color: { type: String, required: true },
+  status: { type: String, enum: ["Active", "Deleted"], default: "Active" },
 });
 
 // Check if model already exists to prevent overwrite error in hot reload
-const HabitModel: Model<HabitDocument> = mongoose.models.Habit || mongoose.model<HabitDocument>('Habit', HabitSchema);
+const HabitModel: Model<HabitDocument> =
+  mongoose.models.Habit || mongoose.model<HabitDocument>("Habit", HabitSchema);
 
 export default HabitModel;

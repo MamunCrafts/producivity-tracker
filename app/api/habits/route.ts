@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/db';
-import HabitModel from '@/models/Habit';
+import { NextResponse } from "next/server";
+import dbConnect from "@/lib/db";
+import HabitModel from "@/models/Habit";
 
 export async function GET() {
   await dbConnect();
-  const habits = await HabitModel.find({});
+  const habits = await HabitModel.find({ status: "Active" });
   return NextResponse.json(habits);
 }
 

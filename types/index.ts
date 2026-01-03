@@ -10,6 +10,7 @@ export interface Habit {
   createdAt: string; // ISO Date string
   completed: boolean;
   color: string; // Hex color for UI
+  status: "Active" | "Deleted"; // Status for soft delete
 }
 
 export interface TimeLog {
