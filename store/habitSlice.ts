@@ -1,62 +1,69 @@
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { Habit, TimeLog } from '@/types';
-import { RootState } from './store';
+import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { Habit, TimeLog } from "@/types";
+import { RootState } from "./store";
 
 interface HabitState {
   habits: Habit[];
   logs: TimeLog[];
   activeTimer: { habitId: string; startTime: string; logId: string } | null;
-  status: 'idle' | 'loading' | 'failed';
+  status: "idle" | "loading" | "failed";
 }
 
 const initialState: HabitState = {
   habits: [],
   logs: [],
   activeTimer: null,
-  status: 'idle',
+  status: "idle",
 };
 
 // Async Thunks
-export const fetchHabits = createAsyncThunk('habit/fetchHabits', async () => {
-  const response = await fetch('/api/habits');
+export const fetchHabits = createAsyncThunk("habit/fetchHabits", async () => {
+  const response = await fetch("/api/habits");
   return (await response.json()) as Habit[];
 });
 
-export const fetchLogs = createAsyncThunk('habit/fetchLogs', async () => {
-  const response = await fetch('/api/logs');
+export const fetchLogs = createAsyncThunk("habit/fetchLogs", async () => {
+  const response = await fetch("/api/logs");
   return (await response.json()) as TimeLog[];
 });
 
 export const createHabit = createAsyncThunk(
-  'habit/createHabit',
-  async (habitData: Omit<Habit, 'id' | 'createdAt' | 'completed' | 'color'> & { color?: string }) => {
+  "habit/createHabit",
+  async (
+    habitData: Omit<Habit, "id" | "createdAt" | "completed" | "color"> & {
+      color?: string;
+    }
+  ) => {
     const newHabit = {
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       completed: false,
-      color: habitData.color || '#3b82f6',
+      color: habitData.color || "#3b82f6",
       ...habitData,
     };
-    const response = await fetch('/api/habits', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch("/api/habits", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newHabit),
     });
     return (await response.json()) as Habit;
   }
 );
 
-export const deleteHabitAsync = createAsyncThunk('habit/deleteHabit', async (id: string) => {
-  await fetch(`/api/habits/${id}`, { method: 'DELETE' });
-  return id;
-});
+export const deleteHabitAsync = createAsyncThunk(
+  "habit/deleteHabit",
+  async (id: string) => {
+    await fetch(`/api/habits/${id}`, { method: "DELETE" });
+    return id;
+  }
+);
 
 export const createLogAsync = createAsyncThunk(
-  'habit/createLog',
+  "habit/createLog",
   async (logData: TimeLog) => {
-     const response = await fetch('/api/logs', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch("/api/logs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(logData),
     });
     return (await response.json()) as TimeLog;
@@ -64,35 +71,39 @@ export const createLogAsync = createAsyncThunk(
 );
 
 export const stopTimerAsync = createAsyncThunk(
-    'habit/stopTimer',
-    async (_, { getState, dispatch }) => {
-        const state = getState() as RootState;
-        const { activeTimer } = state.habit;
-        if (!activeTimer) return;
-
-        const endTime = new Date().toISOString();
-        const start = new Date(activeTimer.startTime);
-        const end = new Date(endTime);
-        const durationSeconds = (end.getTime() - start.getTime()) / 1000;
-        const date = start.toISOString().split('T')[0];
-
-        const newLog: TimeLog = {
-            id: activeTimer.logId,
-            habitId: activeTimer.habitId,
-            startTime: activeTimer.startTime,
-            endTime,
-            durationSeconds,
-            date,
-        };
-
-        // Dispatch createLog
-        await dispatch(createLogAsync(newLog));
-        return; // Return nothing, the fulfilled/pending logic handles timer clear in updated slice locally if we wanted, or just logic here.
+  "habit/stopTimer",
+  async (_, { getState, dispatch }) => {
+    const state = getState() as RootState;
+    const { activeTimer } = state.habit;
+    if (!activeTimer) {
+      throw new Error("No active timer");
     }
+
+    const endTime = new Date().toISOString();
+    const start = new Date(activeTimer.startTime);
+    const end = new Date(endTime);
+    const durationSeconds = Math.floor(
+      (end.getTime() - start.getTime()) / 1000
+    );
+    const date = start.toISOString().split("T")[0];
+
+    const newLog: TimeLog = {
+      id: activeTimer.logId,
+      habitId: activeTimer.habitId,
+      startTime: activeTimer.startTime,
+      endTime,
+      durationSeconds,
+      date,
+    };
+
+    // Dispatch createLog and wait for it
+    await dispatch(createLogAsync(newLog)).unwrap();
+    return newLog;
+  }
 );
 
 export const habitSlice = createSlice({
-  name: 'habit',
+  name: "habit",
   initialState,
   reducers: {
     startTimer: (state, action: PayloadAction<string>) => {
@@ -105,17 +116,17 @@ export const habitSlice = createSlice({
     },
     // We keep a simple stopTimer to clear state if needed, but the Thunk handles the logic
     clearTimer: (state) => {
-        state.activeTimer = null;
-    }
+      state.activeTimer = null;
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchHabits.pending, (state) => {
-        state.status = 'loading';
+        state.status = "loading";
       })
       .addCase(fetchHabits.fulfilled, (state, action) => {
         state.habits = action.payload;
-        state.status = 'idle';
+        state.status = "idle";
       })
       .addCase(fetchLogs.fulfilled, (state, action) => {
         state.logs = action.payload;
@@ -131,7 +142,7 @@ export const habitSlice = createSlice({
         state.logs.push(action.payload);
       })
       .addCase(stopTimerAsync.fulfilled, (state) => {
-          state.activeTimer = null;
+        state.activeTimer = null;
       });
   },
 });
